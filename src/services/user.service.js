@@ -1,4 +1,5 @@
 const sql = require('./sql.service');
+const errService = require('./error.service');
 
 const getAllUsers = async (role) => {
   try {
@@ -36,6 +37,13 @@ const createNewUser = async (
 ) => {
   try {
     const pool = await sql.getConnection();
+
+    const checkExistingLoginRequest = sql.GET_DUBLICATE_LOGIN(login);
+    const isLoginExists = await pool.request().query(checkExistingLoginRequest);
+    if(isLoginExists.recordset[0].Count > 0) {
+      return errService.LOGIN_CONFLICT_ERR;
+    }
+
     const createAuthRequest = sql.CREATE_AUTH(login, password);
     const authId = (await pool.request().query(createAuthRequest))
       .recordset[0]

@@ -73,15 +73,9 @@ const GET_USER_LOGIN_REQUEST = (authId) => `
 `;
 
 const GET_DUBLICATE_LOGIN = (login) => `
-  SELECT DISTINCT A.[Login]
-  FROM [Authentication] A
-  INNER JOIN [Authentication] A1 ON (A.[Login] = '${login}') AND NOT(A.[Id] = A1.[Id])
-`;
-
-const GET_DUBLICATE_PASSWORD = (password) => `
-  SELECT DISTINCT A.[Password]
-  FROM [Authentication] A
-  INNER JOIN [Authentication] A1 ON (A.[Password] = '${password}') AND NOT(A.[Id] = A1.[Id])
+  SELECT COUNT(1) AS Count
+  FROM [Authentication]
+  WHERE [Login] = '${login}'
 `;
 
 const sqlConfig = {
@@ -116,6 +110,5 @@ module.exports = {
   CREATE_ADMIN_USER,
   GET_USER_LOGIN_REQUEST,
   GET_DUBLICATE_LOGIN,
-  GET_DUBLICATE_PASSWORD,
   getConnection
 };
