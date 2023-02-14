@@ -1,5 +1,6 @@
 const { getAllUsers, createNewUser } = require('../services/user.service');
 const { validationResult } = require('express-validator');
+const errService = require('../services/error.service');
 
 const getUsers = async (req, res) => {
   try {
@@ -27,6 +28,11 @@ const createUser = async (req, res) => {
       body.password,
       body.role
     );
+
+    if(result === errService.LOGIN_CONFLICT_ERR) {
+      res.status(409).json({ msg: result });
+      return;
+    }
 
     if (result) res.status(201).send(result);
     else res.status(409).json({ msg: 'Invalid user data' });
