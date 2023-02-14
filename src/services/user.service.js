@@ -1,5 +1,6 @@
 const sql = require('./sql.service');
 const errService = require('./error.service');
+const { generateTokens } = require('../services/token.service');
 
 const getAllUsers = async (role) => {
   try {
@@ -80,6 +81,10 @@ const createNewUser = async (
     const user = createdUser.recordset[0];
     user.Login = userLogin.recordset[0].Login;
     user.Role = role;
+
+    const tokens = generateTokens(authId);
+    user.AccessToken = tokens.accessToken;
+    user.RefreshToken = tokens.refreshToken;
 
     return user;
   } catch (error) {

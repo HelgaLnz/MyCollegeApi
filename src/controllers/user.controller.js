@@ -4,6 +4,15 @@ const errService = require('../services/error.service');
 
 const getUsers = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      if (errors.array().some((e) => e.location === 'headers')) {
+        return res.status(401).json({ errors: errService.UNAUTHORIZED_ERR });
+      }
+
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const result = await getAllUsers(req.query.role);
     res.status(200).send(result);
   } catch (error) {
