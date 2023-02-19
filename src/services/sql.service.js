@@ -78,6 +78,16 @@ const GET_DUBLICATE_LOGIN = (login) => `
   WHERE [Login] = '${login}'
 `;
 
+const CREATE_TIMETABLE = (corpusId, file, fileFormat) => `
+  INSERT INTO Timetable([Date], [CorpusId], [File], [FileFormat]) 
+  SELECT GETDATE(), ${corpusId}, BulkColumn, N'${fileFormat}'
+  FROM OpenRowSet
+    (
+      BULK N'${file}',
+      SINGLE_BLOB
+    ) AS timetable
+  `;
+
 const sqlConfig = {
   server: process.env.SERVER,
   database: process.env.DATABASE,
@@ -110,5 +120,6 @@ module.exports = {
   CREATE_ADMIN_USER,
   GET_USER_LOGIN_REQUEST,
   GET_DUBLICATE_LOGIN,
+  CREATE_TIMETABLE,
   getConnection
 };
