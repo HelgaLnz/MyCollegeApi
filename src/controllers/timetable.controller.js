@@ -1,8 +1,19 @@
 const { createNewTimetable } = require('../services/timetable.service');
+const { validationResult } = require('express-validator');
+const errService = require('../services/error.service');
+
 
 const createTimetable = async (req, res) => {
   try {
     //validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      if (errors.array().some((e) => e.location === 'headers')) {
+        return res.status(401).json({ errors: errService.UNAUTHORIZED_ERR });
+      }
+
+      return res.status(400).json({ errors: errors.array() });
+    }
 
     const body = req.body;
 
@@ -13,7 +24,6 @@ const createTimetable = async (req, res) => {
     );
     
     //check error
-    console.log(result);
     if(result) res.status(201).json({ msg: 'Record added to timetable' });
     else res.status(409).json({ msg: 'Invalid timetable data' });
   } catch (error) {
